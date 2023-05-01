@@ -7,7 +7,7 @@ This is a (unofficial) Docker Image for a bare-bones distribution of [Typst](htt
 ## ⚒️ Running the image
 
 ```bash
-docker run --name typst -v $(PWD):/root  -it 123marvin123/typst:v0.3.0
+docker run --name typst -v $(PWD):/root  -it 123marvin123/typst
 ```
 
 **In the docker environment, you can use the `typst` command like usual. E.g. `typst compile thesis.typ`.**
@@ -22,7 +22,7 @@ The base image of Debian does not contain any additional fonts. This means, you 
 
 E.g. on macOS:
 ```bash
-docker run --name typst -it -v /System/Library/Fonts:/usr/share/fonts:ro 123marvin123/typst:v0.3.0
+docker run --name typst -it -v /System/Library/Fonts:/usr/share/fonts:ro 123marvin123/typst
 ```
 This will allow Typst to see the read-only mounted fonts from your host system without having to modify anything.
 
@@ -32,6 +32,6 @@ Instead of mounting to `/usr/share/fonts`, you can mount the folder to anywhere 
 
 E.g. on macOS:
 ```bash
-docker run --name typst -it -v /System/Library/Fonts:/root/fonts:ro --env TYPST_FONT_PATHS=/root/fonts 123marvin123/typst:v0.3.0
+docker run --name typst -it -v /System/Library/Fonts:/root/fonts:ro --env TYPST_FONT_PATHS=/root/fonts 123marvin123/typst
 ```
 This only has to be done once you create the container.
