@@ -1,5 +1,5 @@
 FROM rust:slim-bullseye AS Builder
-ARG TYPST_VERSION=v0.3.0
+ARG TYPST_VERSION=v0.11.0
 
 
 RUN apt-get --allow-unauthenticated update && \
@@ -12,3 +12,7 @@ FROM debian:bullseye-slim
 
 COPY --from=Builder /typst/target/release/typst /usr/bin/typst
 WORKDIR /root
+
+RUN apt-get update && \
+    apt-get install -y ca-certificates && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}/
