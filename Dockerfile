@@ -1,5 +1,5 @@
 FROM rust:slim-bullseye AS Builder
-ARG TYPST_VERSION=v0.12.0
+ARG TYPST_VERSION=v0.13.0
 
 
 RUN apt-get --allow-unauthenticated update && \
