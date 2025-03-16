@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       # Get the repository's code
       - name: Checkout
@@ -17,8 +17,8 @@ jobs:
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-        with: # Temporary fix (See https://github.com/docker/setup-qemu-action/issues/198)
-          image: tonistiigi/binfmt:qemu-v7.0.0-28
+        with:
+          platforms: linux/amd64,linux/arm64/v8
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
         id: buildx
@@ -51,7 +51,7 @@ jobs:
           context: .
           build-args: |
             TYPST_VERSION=${{ github.ref_name }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64/v8
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
