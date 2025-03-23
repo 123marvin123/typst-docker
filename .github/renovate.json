@@ -9,9 +9,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["/Dockerfile$"],
+      "fileMatch": ["Dockerfile"],
       "matchStrings": [
-        "ARG TYPST_VERSION=v(?<currentValue>.+?)\\s+"
+        "ARG TYPST_VERSION=(?<currentValue>.+?)\\s+"
       ],
       "datasourceTemplate": "github-tags",
       "depNameTemplate": "typst/typst",
