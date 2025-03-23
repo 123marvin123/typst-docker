@@ -13,14 +13,14 @@
       "matchStrings": [
         "ARG TYPST_VERSION=[\"']?(?<currentValue>.+?)[\"']?\\s+"
       ],
-      "datasourceTemplate": "github-releases",
+      "datasourceTemplate": "github-tags",
       "depNameTemplate": "typst/typst",
       "versioningTemplate": "loose"
     }
   ],
   "packageRules": [
     {
-      "matchDatasources": ["github-releases"],
+      "matchDatasources": ["github-tags"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
     },
