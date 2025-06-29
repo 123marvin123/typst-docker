@@ -13,7 +13,6 @@ RUN git clone -c advice.detachedHead=false \
     https://github.com/typst/typst.git ./
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/usr/local/cargo/git \
     CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse \
     cargo build -p typst-cli --release
 
