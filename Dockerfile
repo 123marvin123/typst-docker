@@ -1,18 +1,26 @@
-FROM rust:slim-bullseye AS Builder
+FROM docker.io/rust:slim-bullseye AS Builder
 ARG TYPST_VERSION=v0.13.1
 
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt update && apt install -yq --no-install-recommends \
+    git pkg-config libssl-dev
 
-RUN apt-get --allow-unauthenticated update && \
-    apt-get --allow-unauthenticated install -y git pkg-config libssl-dev
+WORKDIR /typst
 
-RUN git clone --branch $TYPST_VERSION --depth 1 https://github.com/typst/typst.git /typst
-RUN cd /typst && CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse cargo build -p typst-cli --release
+RUN git clone -c advice.detachedHead=false \
+    --branch $TYPST_VERSION --single-branch --depth 1 \
+    https://github.com/typst/typst.git ./
 
-FROM debian:bullseye-slim
+RUN CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse cargo build -p typst-cli --release
+
+FROM docker.io/debian:bullseye-slim
 
 COPY --from=Builder /typst/target/release/typst /usr/bin/typst
+
 WORKDIR /root
 
-RUN apt-get update && \
-    apt-get install -y ca-certificates && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt update && apt install -yq --no-install-recommends \
+    ca-certificates
