@@ -12,8 +12,7 @@ RUN git clone -c advice.detachedHead=false \
     --branch $TYPST_VERSION --single-branch --depth 1 \
     https://github.com/typst/typst.git ./
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse \
+RUN CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse \
     cargo build -p typst-cli --release
 
 FROM docker.io/debian:bullseye-slim
