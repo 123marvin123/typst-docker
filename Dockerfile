@@ -1,5 +1,5 @@
 FROM docker.io/rust:slim-bullseye AS Builder
-ARG TYPST_VERSION=v0.14.0
+ARG TYPST_VERSION=v0.14.1
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
