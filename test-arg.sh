@@ -1,0 +1,9 @@
+#!/bin/bash
+cat << 'DOCKERFILE' > Dockerfile.test
+FROM docker.io/debian:bullseye-slim
+ARG MY_VAR=v1.2.3
+RUN echo "MY_VAR is $MY_VAR"
+RUN echo "MY_VAR stripped is ${MY_VAR#v}"
+RUN MY_VAR=${MY_VAR#v} env | grep MY_VAR || true
+DOCKERFILE
+podman build -f Dockerfile.test .
