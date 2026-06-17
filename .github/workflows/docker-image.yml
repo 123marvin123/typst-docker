@@ -45,6 +45,22 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha
+      - name: Build and load
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          build-args: |
+            TYPST_VERSION=${{ github.ref_name }}
+          load: true
+          tags: test-typst:latest
+
+      - name: Test image
+        run: |
+          echo "Hello World!" > test.typ
+          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace test-typst:latest typst compile test.typ
+          ls -l test.pdf
+          docker run --rm test-typst:latest typst --version
+
       - name: Build and push
         uses: docker/build-push-action@v7
         with:

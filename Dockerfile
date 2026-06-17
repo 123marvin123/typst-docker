@@ -13,7 +13,7 @@ RUN git clone -c advice.detachedHead=false \
     https://github.com/typst/typst.git ./
 
 RUN CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse \
-    cargo build -p typst-cli --release
+    TYPST_VERSION=${TYPST_VERSION#v} cargo build -p typst-cli --release
 
 FROM docker.io/debian:bullseye-slim
 
