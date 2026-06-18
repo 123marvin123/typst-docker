@@ -35,6 +35,8 @@ jobs:
           context: .
           load: true
           tags: test-typst:latest
+          cache-from: type=gha,scope=amd64
+          cache-to: type=gha,scope=amd64,mode=max
 
       - name: Test image
         run: |
@@ -49,3 +51,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64/v8
           push: false
+          cache-from: type=gha,scope=multi-arch
+          cache-to: type=gha,scope=multi-arch,mode=max
