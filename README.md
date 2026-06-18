@@ -1,37 +1,85 @@
 # Typst Docker Image
 
-This is a (unofficial) Docker Image for a bare-bones distribution of [Typst](https://github.com/typst/typst). It is based on Debian and only contains a pre-compiled version of the Typst-CLI. 
+Unofficial, bare-bones Docker image for [Typst](https://github.com/typst/typst). Multi-arch (`linux/amd64`, `linux/arm64/v8`), runs as a non-root user, with a configurable UID/GID.
 
-❗️*Please note*: **There are no additional fonts installed**. Take a look at the section "Using Installed Host System Fonts" or use the built-in fonts in the pre-compiled binary.
+[![CI](https://github.com/123marvin123/typst-docker/actions/workflows/ci.yml/badge.svg)](https://github.com/123marvin123/typst-docker/actions/workflows/ci.yml)
+[![Docker Image Size](https://img.shields.io/docker/image-size/123marvin123/typst)](https://hub.docker.com/r/123marvin123/typst)
+[![Docker Pulls](https://img.shields.io/docker/pulls/123marvin123/typst)](https://hub.docker.com/r/123marvin123/typst)
 
-## ⚒️ Running the image
+> ⚠️ **No extra fonts installed.** Use the built-in embedded fonts, or mount host fonts (see below).
+
+## Tags
+
+Each Typst release is tagged by version (`v0.15.0`) and rolling minor/major (`0.15`, `0`). We do not ship a `latest` tag until Typst stabilises. Available tags:
+
+- `123marvin123/typst:0.15.0` — exact version
+- `123marvin123/typst:0.15` — latest patch of `0.15`
+- `123marvin123/typst:0` — latest minor of `0.x`
+
+## Quick start
 
 ```bash
-docker run --name typst -v $(PWD):/root  -it 123marvin123/typst
+docker run --rm -v "$PWD":/work 123marvin123/typst:0.15.0 compile thesis.typ
 ```
 
-**In the docker environment, you can use the `typst` command like usual. E.g. `typst compile thesis.typ`.**
-
-*Please note that we will not provide a `latest` tag until Typst has arrived at a stable state without major breaking changes with each release.*
-
-## 🈂️ Using Installed Host System Fonts
-
-The base image of Debian does not contain any additional fonts. This means, you can either use the few built-in fonts that are embedded in the Typst executable, or mount your system's font directory into the docker container. This can be accomplished in two ways:
-
-### Mount system fonts to `/usr/share/fonts`
-
-E.g. on macOS:
 ```bash
-docker run --name typst -it -v /System/Library/Fonts:/usr/share/fonts:ro 123marvin123/typst
+docker run --rm 123marvin123/typst:0.15.0 typst --version
+docker run --rm 123marvin123/typst:0.15.0 typst watch thesis.typ
 ```
-This will allow Typst to see the read-only mounted fonts from your host system without having to modify anything.
 
-### Mount system fonts to anywhere
+## UID / GID
 
-Instead of mounting to `/usr/share/fonts`, you can mount the folder to anywhere (e.g. `/root/fonts`) and then modify the environment variable `TYPST_FONT_PATHS`. Using this technique, you can also mount more than one folder:
+By default the image runs as user `typst` (UID 1000 / GID 1000) inside `/work`. Files written by Typst (e.g. `compile`) are owned by that UID, which usually matches your host user.
 
-E.g. on macOS:
+To use a different UID/GID at build time:
+
 ```bash
-docker run --name typst -it -v /System/Library/Fonts:/root/fonts:ro --env TYPST_FONT_PATHS=/root/fonts 123marvin123/typst
+docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t my-typst .
 ```
-This only has to be done once you create the container.
+
+| Build arg | Default | Purpose |
+|-----------|---------|---------|
+| `TYPST_VERSION` | `v0.15.0` | Typst git tag to build |
+| `UID` | `1000` | Non-root user ID |
+| `GID` | `1000` | Non-root group ID |
+
+## Using installed host fonts
+
+The base image contains **no** additional fonts. Use the embedded ones, or mount your system fonts. Common host font paths: `/usr/share/fonts` (Linux), `/System/Library/Fonts` (macOS), or any directory of `.ttf`/`.otf` files you own.
+
+### Mount to `/usr/share/fonts` (read-only)
+
+```bash
+docker run --rm -v "$PWD":/work \
+  -v <HOST_FONT_DIR>:/usr/share/fonts:ro \
+  123marvin123/typst:0.15.0 compile thesis.typ
+```
+
+### Mount anywhere and point Typst at it
+
+Use `TYPST_FONT_PATHS` to expose one or more custom font directories:
+
+```bash
+docker run --rm -v "$PWD":/work \
+  -v <HOST_FONT_DIR>:/fonts:ro \
+  -e TYPST_FONT_PATHS=/fonts \
+  123marvin123/typst:0.15.0 compile thesis.typ
+```
+
+## Multi-arch
+
+Images are built for `linux/amd64` and `linux/arm64/v8` via GitHub Actions (QEMU + buildx). Pick one explicitly with `--platform`, or let Docker auto-select:
+
+```bash
+docker run --rm --platform linux/arm64 123marvin123/typst:0.15.0 --version
+```
+
+## Building from source
+
+```bash
+docker build --build-arg TYPST_VERSION=v0.15.0 -t typst:0.15.0 .
+```
+
+## License
+
+Typst is licensed under the [Apache License 2.0](https://github.com/typst/typst/blob/main/LICENSE). This Dockerfile is provided as-is under the same license; see [`LICENSE`](./LICENSE).
