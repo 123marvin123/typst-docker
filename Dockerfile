@@ -16,7 +16,7 @@ RUN git clone -c advice.detachedHead=false \
 RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,target=/typst/target,sharing=locked \
     CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse \
-    cargo build -p typst-cli --locked --release \
+    TYPST_VERSION=${TYPST_VERSION#v} cargo build -p typst-cli --locked --release \
     && cp target/release/typst /tmp/typst
 
 FROM docker.io/debian:bookworm-slim
