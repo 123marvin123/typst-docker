@@ -20,11 +20,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-        with:
-          platforms: linux/amd64,linux/arm64/v8
-
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v4
@@ -44,12 +39,3 @@ jobs:
           docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/work test-typst:latest typst compile test.typ
           ls -l test.pdf
           docker run --rm test-typst:latest typst --version
-
-      - name: Build (multi-arch, no push)
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64/v8
-          push: false
-          cache-from: type=gha,scope=multi-arch
-          cache-to: type=gha,scope=multi-arch,mode=max
