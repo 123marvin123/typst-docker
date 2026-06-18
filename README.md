@@ -12,19 +12,19 @@ Unofficial, bare-bones Docker image for [Typst](https://github.com/typst/typst).
 
 Each Typst release is tagged by version (`v0.15.0`) and rolling minor/major (`0.15`, `0`). We do not ship a `latest` tag until Typst stabilises. Available tags:
 
-- `123marvin123/typst:0.15.0` — exact version
+- `123marvin123/typst:0.15.0` — exact version (pinned)
 - `123marvin123/typst:0.15` — latest patch of `0.15`
 - `123marvin123/typst:0` — latest minor of `0.x`
 
 ## Quick start
 
 ```bash
-docker run --rm -v "$PWD":/work 123marvin123/typst:0.15.0 typst compile thesis.typ
+docker run --rm -v "$PWD":/work 123marvin123/typst:0.15 typst compile thesis.typ
 ```
 
 ```bash
-docker run --rm 123marvin123/typst:0.15.0 typst --version
-docker run --rm 123marvin123/typst:0.15.0 typst watch thesis.typ
+docker run --rm 123marvin123/typst:0.15 typst --version
+docker run --rm 123marvin123/typst:0.15 typst watch thesis.typ
 ```
 
 ## UID / GID
@@ -52,7 +52,7 @@ The base image contains **no** additional fonts. Use the embedded ones, or mount
 ```bash
 docker run --rm -v "$PWD":/work \
   -v <HOST_FONT_DIR>:/usr/share/fonts:ro \
-  123marvin123/typst:0.15.0 typst compile thesis.typ
+  123marvin123/typst:0.15 typst compile thesis.typ
 ```
 
 ### Mount anywhere and point Typst at it
@@ -63,7 +63,7 @@ Use `TYPST_FONT_PATHS` to expose one or more custom font directories:
 docker run --rm -v "$PWD":/work \
   -v <HOST_FONT_DIR>:/fonts:ro \
   -e TYPST_FONT_PATHS=/fonts \
-  123marvin123/typst:0.15.0 typst compile thesis.typ
+  123marvin123/typst:0.15 typst compile thesis.typ
 ```
 
 ## Multi-arch
@@ -71,13 +71,13 @@ docker run --rm -v "$PWD":/work \
 Images are built for `linux/amd64` and `linux/arm64/v8` via GitHub Actions (QEMU + buildx). Pick one explicitly with `--platform`, or let Docker auto-select:
 
 ```bash
-docker run --rm --platform linux/arm64 123marvin123/typst:0.15.0 typst --version
+docker run --rm --platform linux/arm64 123marvin123/typst:0.15 typst --version
 ```
 
 ## Building from source
 
 ```bash
-docker build --build-arg TYPST_VERSION=v0.15.0 -t typst:0.15.0 .
+docker build --build-arg TYPST_VERSION=v0.15.0 -t typst:0.15 .
 ```
 
 ## License
