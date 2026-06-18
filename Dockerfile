@@ -13,8 +13,11 @@ RUN git clone -c advice.detachedHead=false \
     --branch $TYPST_VERSION --single-branch --depth 1 \
     https://github.com/typst/typst.git ./
 
-RUN CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse \
-    cargo build -p typst-cli --locked --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=cache,target=/typst/target,sharing=locked \
+    CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse \
+    cargo build -p typst-cli --locked --release \
+    && cp target/release/typst /tmp/typst
 
 FROM docker.io/debian:bookworm-slim
 
@@ -28,7 +31,7 @@ LABEL org.opencontainers.image.title="typst" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="${TYPST_VERSION#v}"
 
-COPY --from=builder /typst/target/release/typst /usr/local/bin/typst
+COPY --from=builder /tmp/typst /usr/local/bin/typst
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
