@@ -1,48 +1,35 @@
-name: Build
+name: CI
 
-# Controls when the workflow will run
 on:
   workflow_dispatch:
   push:
-    branches: 
-      - '**'
+    branches: [master, main]
   pull_request:
-    branches: 
-      - '**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      # Get the repository's code
       - name: Checkout
         uses: actions/checkout@v6
-      # https://github.com/docker/setup-qemu-action
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
           platforms: linux/amd64,linux/arm64/v8
-      # https://github.com/docker/setup-buildx-action
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v4
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          # list of Docker images to use as base name for tags
-          images: |
-            123marvin123/typst
-          # Docker tags based on the following events/attributes
-          tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-      - name: Build and load
+
+      - name: Build and load (amd64)
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -52,15 +39,13 @@ jobs:
       - name: Test image
         run: |
           echo "Hello World!" > test.typ
-          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace test-typst:latest typst compile test.typ
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/work test-typst:latest typst compile test.typ
           ls -l test.pdf
           docker run --rm test-typst:latest typst --version
 
-      - name: Build and push
+      - name: Build (multi-arch, no push)
         uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64/v8
           push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
