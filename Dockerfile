@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.25
 FROM docker.io/rust:slim-bookworm AS builder
-ARG TYPST_VERSION=v0.15.0
+ARG TYPST_VERSION=v0.15.1
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
 
 FROM docker.io/debian:bookworm-slim
 
-ARG TYPST_VERSION=v0.15.0
+ARG TYPST_VERSION=v0.15.1
 ARG UID=1000
 ARG GID=1000
 
