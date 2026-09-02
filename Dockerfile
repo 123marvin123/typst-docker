@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.26
+# syntax=docker/dockerfile:1.27
 FROM docker.io/rust:slim-bookworm AS builder
 ARG TYPST_VERSION=v0.15.1
 
